@@ -489,7 +489,7 @@ final class PaymentGateway extends CardLink {
 	 * @return string html checkbox
 	 */
 	private function getMasterPass() {
-		return '<label><input type="checkbox" name="MasterPass" value="yes"> ' . __('Or pay with MasterPass.', 'alphabank') . ' <img src="' . plugins_url('images/masterpass.gif', __FILE__) . '" alt="MasterPass"  width="30" height="19"></label><br><br>';
+		return '<label><input type="checkbox" name="MasterPass" value="yes"> ' . __('Or pay with MasterPass.', 'alphabank') . ' <img src="' . plugins_url('images/masterpass.gif', dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'plugin.php') . '" alt="MasterPass"  width="30" height="19"></label><br><br>';
 	}
 
 	/**

@@ -10,7 +10,7 @@ namespace NetStar\WooAlphaBank;
  * Domain Path: /languages/
  * Text Domain: alphabank
  * WC requires at least: 6.3.1
- * WC tested up to: 9.5.1
+ * WC tested up to: 9.6.0
  */
 if (!defined('ABSPATH')) {
 	header("Status: 404 Not Found");
