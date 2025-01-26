@@ -1,0 +1,19 @@
+{
+	"name" : "netstar/woo-alpha-bank",
+	"minimum-stability" : "dev",
+	"license" : "MIT",
+	"description" : "A WooCommerce Payment Gateway for the Alpha Bank",
+	"autoload" : {
+		"psr-4" : {
+			"NetStar\\WooAlphaBank\\" : "src/"
+		}
+	},
+	"require" : {
+		"php" : ">=8.1"
+	},
+	"keywords" : [
+		"WooCommerce",
+		"Alpha Bank",
+		"WordPress"
+	]
+}

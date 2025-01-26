@@ -1,0 +1,159 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-06-14 07:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Loco-Source-Locale: en_EN\n"
+"X-Loco-Parser: loco_parse_po\n"
+
+# @ alphabank
+msgid "Or pay with MasterPass."
+msgstr ""
+
+# @ alphabank
+msgid "Enable Payment via MasterPass."
+msgstr ""
+
+# @ alphabank
+msgid "Alpha Bank Payment Gateway for WooCommerce. Version "
+msgstr ""
+
+# @ alphabank
+msgid "Payment will be made in Euro"
+msgstr ""
+
+# @ alphabank
+msgid "Enable Alpha Bank Payment Gateway."
+msgstr ""
+
+# @ alphabank
+msgid "Live Server/Test Server"
+msgstr ""
+
+# @ alphabank
+msgid "Enable Alpha Bank Payment by Preauthorization. Works only with the approval of the Bank."
+msgstr ""
+
+# @ alphabank
+msgid "Works only with the approval of the Bank."
+msgstr ""
+
+# @ alphabank
+msgid "Check for live account."
+msgstr ""
+
+# @ alphabank
+msgid "Installments"
+msgstr ""
+
+# @ alphabank
+msgid "This id (Merchant ID) is provided by the Alpha Bank."
+msgstr ""
+
+# @ alphabank
+msgid "Pay securely with credit, debit and prepaid cards of Visa, MasterCard, Maestro, American Express, Diners and Discover through the electronic payment platform \"Alpha e-Commerce\" of Alpha Bank."
+msgstr ""
+
+# @ alphabank
+msgid "Shared secret key"
+msgstr ""
+
+# @ alphabank
+msgid "Given to Merchant by Alpha Bank."
+msgstr ""
+
+# @ alphabank
+msgid "Select combination or max. installments"
+msgstr ""
+
+# @ alphabank
+msgid "Select Page"
+msgstr ""
+
+# @ alphabank
+msgid "Returning Page on Error"
+msgstr ""
+
+# @ alphabank
+msgid "Select the failure page."
+msgstr ""
+
+# @ alphabank
+msgid "If you like our <strong>plugin</strong>, please leave us a rating."
+msgstr ""
+
+# @ alphabank
+msgid "Thank you for your order, please continue payment."
+msgstr ""
+
+# @ alphabank
+msgid "Continue without installments"
+msgstr ""
+
+# @ alphabank
+msgid "Preauthorization"
+msgstr ""
+
+# @ alphabank
+msgid "installments"
+msgstr ""
+
+# @ alphabank
+msgid "The Bank does not support installment fee's.<br>This installment fee is \"virtual\", you can charge your client whith an additional fee for using installments."
+msgstr ""
+
+# @ alphabank
+msgid "Enter a installment fee (%) calculated from the cart total."
+msgstr ""
+
+# @ alphabank
+msgid "allow"
+msgstr ""
+
+# @ alphabank
+msgid "in %"
+msgstr ""
+
+# @ alphabank
+msgid "Example"
+msgstr ""
+
+# @ alphabank
+msgid "Total order"
+msgstr ""
+
+# @ alphabank
+msgid "Installment Fee"
+msgstr ""
+
+# @ alphabank
+msgid "and so on... else, leave the field blank."
+msgstr ""
+
+# @ alphabank
+msgid "Custom Installments"
+msgstr ""
+
+# @ alphabank
+msgid "Months"
+msgstr ""
+
+# @ alphabank
+msgid "Select the recurrence duration"
+msgstr ""
+
+# @ alphabank
+msgid "One time"
+msgstr ""
+
+# @ alphabank
+msgid "Recurring Payment"
+msgstr ""
