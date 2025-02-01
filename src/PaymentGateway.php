@@ -25,11 +25,11 @@ final class PaymentGateway extends CardLink
         $this->init_settings();
 
         // Turn these settings into variables we can use
-        foreach ($this->settings as $setting_key => $value) {
-            $this->$setting_key = $value;
+        foreach ($this->settings as $settingΚey => $value) {
+            $this->$settingΚey = $value;
         }
 
-        $this->url = ($this->live === "no") ? 'https://alphaecommerce-test.cardlink.gr/vpos/shophandlermpi ' : 'https://www.alphaecommerce.gr/vpos/shophandlermpi';
+        $this->url = ($this->live === 'no') ? 'https://alphaecommerce-test.cardlink.gr/vpos/shophandlermpi ' : 'https://www.alphaecommerce.gr/vpos/shophandlermpi';
 
         parent::__construct();
     }
@@ -68,7 +68,7 @@ final class PaymentGateway extends CardLink
                 'default' => __('Pay securely with credit, debit and prepaid cards of Visa, MasterCard, Maestro, American Express, Diners and Discover through the electronic payment platform "Alpha e-Commerce" of Alpha Bank.', 'alphabank'),
                 'desc_tip' => false
             ),
-            'merchant_id' => array(
+            'merchantId' => array(
                 'title' => __('Merchant ID', 'alphabank'),
                 'type' => 'text',
                 'description' => __('This id (Merchant ID) is provided by the Alpha Bank.', 'alphabank'),
@@ -82,21 +82,21 @@ final class PaymentGateway extends CardLink
                 'desc_tip' => false,
                 'class' => 'required'
             ),
-            'redirect_nok_page_id' => array(
+            'redirectNotOkPageId' => array(
                 'title' => __('Returning Page on Error', 'alphabank'),
                 'type' => 'select',
                 'options' => $this->getAllWpPages(__('Select Page', 'alphabank')),
                 'description' => __("Select the failure page.", 'alphabank') . '<span style="color:red;">*</span>',
                 'class' => 'required'
             ),
-            'masterpass' => array(
+            'masterPass' => array(
                 'title' => __('MasterPass', 'alphabank'),
                 'type' => 'checkbox',
                 'label' => __('Enable Payment via MasterPass.', 'alphabank'),
                 'default' => 'no',
                 'desc_tip' => false
             ),
-            'preauth' => array(
+            'preAuth' => array(
                 'title' => __('Preauthorization', 'alphabank'),
                 'type' => 'checkbox',
                 'label' => __('Enable Alpha Bank Payment by Preauthorization. Works only with the approval of the Bank.', 'alphabank'),
@@ -153,7 +153,7 @@ final class PaymentGateway extends CardLink
             echo wpautop(wptexturize($this->description));
         }
 
-        if ($this->masterpass === "yes") {
+        if ($this->masterPass === "yes") {
             echo $this->getMasterPass();
         }
 
@@ -177,42 +177,9 @@ final class PaymentGateway extends CardLink
         $order = wc_get_order($orderId);
         $expire = time() + (60 * 15);
 
-        // Erstmal alles leeren um dann Neue Endscheidung zu speichern
-        setcookie('my_masterpass_choice', '', 1);
-        setcookie('my_installment_choice', '', 1);
-        if (isset($_SESSION['my_masterpass_choice'])) {
-            unset($_SESSION['my_masterpass_choice']);
-        }
-        if (isset($_SESSION['my_installment_choice'])) {
-            unset($_SESSION['my_installment_choice']);
-        }
-        if (isset($_SESSION['my_recurring_choice'])) {
-            unset($_SESSION['my_recurring_choice']);
-        }
-
-        // Save choise in cookies oder Session
-        if (array_key_exists('SelRecurringPeriod', $_POST)) {
-            setcookie('my_recurring_choice', $_POST['SelRecurringPeriod'], $expire);
-            if (! isset($_COOKIE['my_recurring_choice'])) {
-                $_SESSION['my_recurring_choice'] = $_POST['SelRecurringPeriod'];
-            }
-        }
-
-        // Save choise in cookies oder Session
-        if (array_key_exists('SelInstallmentperiod', $_POST)) {
-            setcookie('my_installment_choice', $_POST['SelInstallmentperiod'], $expire);
-            if (! isset($_COOKIE['my_installment_choice'])) {
-                $_SESSION['my_installment_choice'] = $_POST['SelInstallmentperiod'];
-            }
-        }
-
-        // Save choise in cookies oder Session
-        if (array_key_exists('MasterPass', $_POST)) {
-            setcookie('my_masterpass_choice', $_POST['MasterPass'], $expire);
-            if (! isset($_COOKIE['my_masterpass_choice'])) {
-                $_SESSION['my_masterpass_choice'] = $_POST['MasterPass'];
-            }
-        }
+        $this->saveUserChoice('my_masterpass_choice', 'MasterPass', $expire);
+        $this->saveUserChoice('my_installment_choice', 'SelInstallmentperiod', $expire);
+        $this->saveUserChoice('my_recurring_choice', 'SelRecurringPeriod', $expire);
 
         // Return thankyou redirect
         return array(
@@ -326,7 +293,7 @@ final class PaymentGateway extends CardLink
     /**
      *
      * {@inheritdoc}
-     * @see \WC_Payment_Gateway::process_payment()
+     * @see Cardlink::calculateDigest()
      */
     protected function calculateDigest(string|array $stingOrArray): string
     {
@@ -342,51 +309,34 @@ final class PaymentGateway extends CardLink
     /**
      *
      * {@inheritdoc}
-     * @see \WC_Payment_Gateway::process_payment()
+     * @see Cardlink::getBankForm()
      */
     protected function getBankForm(int $orderId): string
     {
         $order = wc_get_order($orderId);
         $txnid = $orderId . time();
         $productinfo = "Order:$orderId";
-        $MasterPass = '';
-        $Inst = 1;
+        $euroAmount = $order->get_total();
 
-        $EuroAmount = $order->get_total();
-
-        if (isset($_COOKIE['my_masterpass_choice'])) {
-            $MasterPass = $_COOKIE['my_masterpass_choice'];
-        } elseif (isset($_SESSION['my_masterpass_choice'])) {
-            $MasterPass = $_SESSION['my_masterpass_choice'];
-        }
-
-        if (isset($_COOKIE['my_installment_choice'])) {
-            $Inst = $_COOKIE['my_installment_choice'];
-        } elseif (isset($_SESSION['my_installment_choice'])) {
-            $Inst = $_SESSION['my_installment_choice'];
-        }
-
-        if (isset($_COOKIE['my_recurring_choice'])) {
-            $recurring = $_COOKIE['my_recurring_choice'];
-        } elseif (isset($_SESSION['my_recurring_choice'])) {
-            $recurring = $_SESSION['my_recurring_choice'];
-        }
+        $masterPass = $this->getUserChoice('my_masterpass_choice', '');
+        $installment = $this->getUserChoice('my_installment_choice', 1);
+        $recurring = $this->getUserChoice('my_recurring_choice', '');
 
         // Installment Fee?
-        if ($Inst >= 2 && $this->installmentsFee != '' && is_numeric($this->installmentsFee)) {
-            $EuroAmount = $EuroAmount + ($EuroAmount * ($this->installmentsFee / 100));
+        if ($installment >= 2 && $this->installmentsFee != '' && is_numeric($this->installmentsFee)) {
+            $euroAmount = $euroAmount + ($euroAmount * ($this->installmentsFee / 100));
         }
 
         // Country
         $country = $order->get_billing_country();
 
         // Standarts in Array packen
-        $form_args1 = array(
+        $mainFormArgs = array(
             'mid' => $this->merchant_id,
             'lang' => $this->getLanguageCode(),
             'orderid' => $txnid,
             'orderDesc' => $productinfo,
-            'orderAmount' => round($EuroAmount, 2),
+            'orderAmount' => round($euroAmount, 2),
             'currency' => 'EUR',
             'payerEmail' => $order->get_billing_email(),
             'payerPhone' => $order->get_billing_phone(),
@@ -395,63 +345,58 @@ final class PaymentGateway extends CardLink
 
         // Only not GR
         if ($country !== 'GR') {
-            $form_args1['billState'] = $order->get_billing_state();
+            $mainFormArgs['billState'] = $order->get_billing_state();
         }
 
-        $form_args0 = array(
-            'billZip' => $order->get_billing_postcode(),
-            'billCity' => $this->stringSanitize($order->get_billing_city()),
-            'billAddress' => $this->stringSanitize($order->get_billing_address_1())
-        );
-
-        // Standart Mergen
-        $form_args1 = array_merge($form_args1, $form_args0);
+        $mainFormArgs['billZip'] = $order->get_billing_postcode();
+        $mainFormArgs['billCity'] = $this->stringSanitize($order->get_billing_city());
+        $mainFormArgs['billAddress'] = $this->stringSanitize($order->get_billing_address_1());
 
         // Nur wenn MasterPass
-        if ($MasterPass === "yes") {
-            $form_args1['payMethod'] = 'auto:MasterPass';
+        if ($masterPass === "yes") {
+            $mainFormArgs['payMethod'] = 'auto:MasterPass';
         }
 
         // Standarts noch zum schluss packen
-        $form_args1['trType'] = $this->getTransactionType();
+        $mainFormArgs['trType'] = $this->getTransactionType();
 
-        if ($Inst >= 2) {
-            $form_args2 = array(
+        if ($installment >= 2) {
+            $additionalFormArgs = array(
                 'extInstallmentoffset' => 0,
-                'extInstallmentperiod' => $Inst
+                'extInstallmentperiod' => $installment
             );
         }
 
         if (! empty($this->recurringEndDate) && ! empty($recurring) && $this->recurringEndDate >= $recurring) {
-            $form_args2 = array(
+            $additionalFormArgs = array(
                 'extRecurringfrequency' => $this->recurringPayments,
                 'extRecurringenddate' => $this->getRecurringEndDate($recurring)
             );
         }
 
-        $form_args3 = array(
+        $defaultFormArgs = array(
             'confirmUrl' => rawurldecode(wc_get_endpoint_url('wc-api', $this->id . '/', home_url())),
             'cancelUrl' => rawurldecode(wc_get_endpoint_url('wc-api', $this->id . '/', home_url())),
             'var2' => $this->stringSanitize($order->get_billing_first_name()),
             'var3' => $this->stringSanitize($order->get_billing_last_name())
         );
 
-        $form_args = ! empty($form_args2) ? array_merge($form_args1, $form_args2, $form_args3) : array_merge($form_args1, $form_args3);
+        $formArgs = ! empty($additionalFormArgs) ? array_merge($mainFormArgs, $additionalFormArgs, $defaultFormArgs) : array_merge($mainFormArgs, $defaultFormArgs);
 
         // Digest
-        $getDigest = $form_args;
+        $getDigest = $formArgs;
         array_push($getDigest, $this->salt);
         $digest = $this->calculateDigest($getDigest);
         // Digest
 
-        $form_args_array = array();
-        foreach ($form_args as $key => $value) {
-            $form_args_array[] = "<input type='hidden' id='$key' name='$key' value='$value'/>";
+        $formArgsArray = array();
+        foreach ($formArgs as $key => $value) {
+            $formArgsArray[] = "<input type='hidden' id='$key' name='$key' value='$value'/>";
         }
-        $form_args_array[] = '<input type="hidden" name="digest" value="' . $digest . '"/>';
+        $formArgsArray[] = '<input type="hidden" name="digest" value="' . $digest . '"/>';
 
         return '<form action="' . $this->url . '" method="POST" name="cardlink" id="cardlinkform" accept-charset="UTF-8" form.enctype="application/x-www-form-urlencoded">
-						' . implode('', $form_args_array) . '
+						' . implode('', $formArgsArray) . '
 					</form>
 					<div style="clear:both;"></div>
 					<div id="paymentButton" style="display:none;">
@@ -508,8 +453,8 @@ final class PaymentGateway extends CardLink
      */
     private function getRecurringSelectBox(): void
     {
-        $recuringText = __('Recurring Payment', 'alphabank');
-        echo '<b>' . $recuringText . '</b>';
+        echo '<b>' . __('Recurring Payment', 'alphabank') . '</b>';
+
         $field = '<select name="SelRecurringPeriod" id="SelRecurringPeriod">';
         foreach ($this->getRecuringOptions() as $key => $value) {
             if ($key > $this->recurringEndDate) {
