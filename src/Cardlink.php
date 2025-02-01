@@ -14,11 +14,11 @@ abstract class CardLink extends WC_Payment_Gateway
 {
 
     /**
-     * Is Live Server
+     * Is Live Server yes/no
      *
-     * @var boolean
+     * @var string
      */
-    protected bool $live;
+    protected string $live;
 
     protected string $merchantId;
 
@@ -32,9 +32,16 @@ abstract class CardLink extends WC_Payment_Gateway
     /**
      * Enable/Disable the Preauthorization
      *
-     * @var boolean
+     * @var string yes/no
      */
-    protected bool $preAuth;
+    protected string $preAuth;
+
+    /**
+     * Enable/Disable the MasterPass Option
+     *
+     * @var string
+     */
+    protected string $masterPass;
 
     /**
      * The Installments maximum.
@@ -225,15 +232,17 @@ abstract class CardLink extends WC_Payment_Gateway
             }
         }
 
-        $InstMonths = '<label>' . $instText . '<select name="SelInstallmentperiod" id="SelInstallmentperiod">';
+        $installmentSelectBox = '<label>' . $instText . '<select name="SelInstallmentperiod" id="SelInstallmentperiod">';
         foreach (range(1, $maxInstallments) as $number) {
-            if ($number == 1)
-                $InstMonths .= '<option value="1">' . __("Continue without installments", 'alphabank') . '</option>';
-            else if ($number > 1)
-                $InstMonths .= '<option value="' . $number . '">' . $number . ' ' . __('Installments', 'alphabank') . ' (' . $number . 'x ' . round(($orderTotal / $number), 2) . ' &euro;) </option>';
+            if ($number == 1) {
+                $installmentSelectBox .= '<option value="1">' . __("Continue without installments", 'alphabank') . '</option>';
+            } elseif ($number > 1) {
+                $installmentSelectBox .= '<option value="' . $number . '">' . $number . ' ' . __('Installments', 'alphabank') . ' (' . $number . 'x ' . round(($orderTotal / $number), 2) . ' &euro;) </option>';
+            }
         }
-        $InstMonths .= '</select></label>';
-        return $InstMonths;
+        $installmentSelectBox .= '</select></label>';
+
+        return $installmentSelectBox;
     }
 
     /**
@@ -253,7 +262,7 @@ abstract class CardLink extends WC_Payment_Gateway
      */
     final protected function getTransactionType(): int
     {
-        return (isset($this->preAuth) && $this->preAuth != "no") ? self::PREAUTHORIZATION : self::PAYMENT;
+        return (isset($this->preAuth) && $this->preAuth !== "no") ? self::PREAUTHORIZATION : self::PAYMENT;
     }
 
     /**
@@ -341,5 +350,49 @@ abstract class CardLink extends WC_Payment_Gateway
         }
 
         return apply_filters('woocommerce_get_return_url', $returnUrl, $order);
+    }
+
+    /**
+     * Save the seleceted user choice in a cookie or in the session
+     *
+     * @param string $selectedName
+     *            to Save.
+     * @param string $postKey
+     * @param int $expireAfterSeconds
+     */
+    final protected function saveUserChoice(string $selectedName, string $postKey, int $expireAfterSeconds): void
+    {
+        setcookie($selectedName, '', 1);
+
+        if (isset($_SESSION[$selectedName])) {
+            unset($_SESSION[$selectedName]);
+        }
+
+        if (array_key_exists($postKey, $_POST)) {
+            setcookie($selectedName, $_POST[$postKey], $expireAfterSeconds);
+            if (! isset($_COOKIE[$selectedName])) {
+                $_SESSION[$selectedName] = $_POST[$postKey];
+            }
+        }
+    }
+
+    /**
+     * Returns the saved user choice from the cookie or the session
+     *
+     * @param string $selectedName
+     * @param int|string $defaultChoice
+     * @return int|string
+     */
+    final protected function getUserChoice(string $selectedName, int|string $defaultChoice): int|string
+    {
+        $userChoice = $defaultChoice;
+
+        if (isset($_COOKIE[$selectedName])) {
+            $userChoice = $_COOKIE[$selectedName];
+        } elseif (isset($_SESSION[$selectedName])) {
+            $userChoice = $_SESSION[$selectedName];
+        }
+
+        return $userChoice;
     }
 }

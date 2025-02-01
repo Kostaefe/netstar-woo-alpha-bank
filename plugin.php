@@ -4,7 +4,7 @@ namespace NetStar\WooAlphaBank;
 /**
  * Plugin Name: NETSTAR-GR Ltd - WooCommerce Alpha Bank Payment Gateway
  * Description: Alpha Bank Payment gateway for WooCommerce, with installments and MasterPass payment!
- * Version: 5.0.0
+ * Version: 5.0.1
  * Author: NETSTAR-GR Ltd
  * Domain Path: /languages/
  * Text Domain: alphabank
